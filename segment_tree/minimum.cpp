@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+
+// this is the segment tree for minimum
 class SegTree
 {
     vector<int> seg;
