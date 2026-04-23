@@ -3,9 +3,11 @@ using namespace std;
 
 class SegmentTree{
     vector<int> arr;
+    vector<int> lazy;
 public:
     SegmentTree(int n){
         arr.resize(4*n);
+        lazy.resize(4*n);
     }
     void buildTree(int ind,int l,int r,vector<int> &nums){
         if(l>r){
@@ -34,10 +36,43 @@ public:
         arr[ind]=arr[ind*2+1]+arr[ind*2+2];
     }
     int queryTree(int ind,int l,int r,int s,int e){
+        if(lazy[ind]!=0){
+            arr[ind]+=lazy[ind]*(r-l+1);
+            if(l!=r){
+                lazy[ind*2+1]+=lazy[ind];
+                lazy[ind*2+2]+=lazy[ind];
+            }
+            lazy[ind]=0;
+        }
         if(l>e || r<s) return 0;
         if(l>=s && r<=e) return arr[ind];
         int mid=(l+r)/2;
         return queryTree(ind*2+1,l,mid,s,e) + queryTree(ind*2+2, mid+1, r, s, e);
+    }
+    void updateRange(int ind,int l,int r,int s,int e,int val){
+        if(lazy[ind]!=0){
+            arr[ind]+=lazy[ind]*(r-l+1);
+            if(l!=r){
+                lazy[ind*2+1]+=lazy[ind];
+                lazy[ind*2+2]+=lazy[ind];
+            }
+            lazy[ind]=0;
+        }
+        if(l>e || r<s){
+            return;
+        }
+        if(l>=s && r<=e){
+            arr[ind]+=val*(r-l+1);
+            if(l!=r){
+                lazy[ind*2+1]+=val;
+                lazy[ind*2+2]+=val;
+            }
+            return;
+        }
+        int mid=(r+l)/2;
+        updateRange(ind*2+1,l,mid,s,e,val);
+        updateRange(ind*2+2,mid+1,r,s,e,val);
+        arr[ind]=arr[ind*2+1]+arr[ind*2+2];
     }
 };
 
